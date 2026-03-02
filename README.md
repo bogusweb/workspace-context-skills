@@ -1,41 +1,71 @@
 # workspace-context-skills
 
-> Claude Code skill package — automatic domain context loading for monorepos and multi-library projects.
+**Teach Claude your monorepo. Once.**
 
-When Claude works on code inside a registered library, it silently reads that library's `README.md` before responding. No more re-explaining architecture. No more wrong import paths. No more guessing patterns.
+Stop re-explaining your architecture every session. `workspace-context-skills` automatically loads the right library documentation the moment Claude starts working in that part of your codebase — no prompting required.
+
+> Works with Nx · Angular · npm workspaces · any monorepo with `project.json` or `package.json`
+
+---
+
+## The Problem
+
+You have 40 libraries. Claude knows Angular. Claude does not know *your* Angular.
+
+Every session you either paste architecture context manually, or Claude guesses — wrong import paths, wrong store patterns, wrong layer conventions. You correct it. It apologizes. You move on. Repeat forever.
+
+## The Fix
+
+Register your libraries once. Claude reads their `README.md` silently before every task. No extra prompts. No copy-paste. Just accurate code on the first try.
+
+```
+You:    "Add a loading state to the books store"
+
+Claude: *reads libs/widget-map/domain-books/README.md*
+        *sees: NgRx Signal Store, withState({ books, isLoading }), facade pattern*
+
+Claude: here's the exact implementation using your existing patterns...
+```
 
 ---
 
 ## Skills Included
 
-| Skill | Install command | Purpose |
-|-------|-----------------|---------|
-| `domain-context` | see below | Auto-loads domain READMEs during tasks |
-| `domain-init` | see below | Scans your project and writes the Domain Registry to `CLAUDE.md` |
-| `domain-readme` | see below | Generates/updates `README.md` for any library |
+| Skill | Purpose |
+|-------|---------|
+| [`domain-context`](#domain-context) | Always-on: auto-loads domain README when Claude works in a registered library |
+| [`domain-init`](#domain-init) | One-time setup: scans your workspace and writes the registry to `CLAUDE.md` |
+| [`domain-readme`](#domain-readme) | On-demand: generates a structured `README.md` for any library from its source code |
 
 ---
 
-## Quick Start
+## Installation
 
-### 1. Install the skills
-
-```bash
-# Global (recommended) — active in all projects
-npx skills add YOUR_USERNAME/workspace-context-skills@domain-context -g -y
-npx skills add YOUR_USERNAME/workspace-context-skills@domain-init -g -y
-npx skills add YOUR_USERNAME/workspace-context-skills@domain-readme -g -y
-```
-
-Or project-local:
+Requires [Claude Code](https://claude.ai/code) and `npx skills` CLI.
 
 ```bash
-npx skills add YOUR_USERNAME/workspace-context-skills@domain-context
-npx skills add YOUR_USERNAME/workspace-context-skills@domain-init
-npx skills add YOUR_USERNAME/workspace-context-skills@domain-readme
+# Install all three skills globally (recommended)
+npx skills add bogusweb/workspace-context-skills@domain-context -g -y
+npx skills add bogusweb/workspace-context-skills@domain-init -g -y
+npx skills add bogusweb/workspace-context-skills@domain-readme -g -y
 ```
 
-### 2. Initialize your project's Domain Registry
+<details>
+<summary>Project-local installation</summary>
+
+```bash
+npx skills add bogusweb/workspace-context-skills@domain-context
+npx skills add bogusweb/workspace-context-skills@domain-init
+npx skills add bogusweb/workspace-context-skills@domain-readme
+```
+
+</details>
+
+---
+
+## Setup (2 minutes)
+
+### Step 1 — Scan your workspace
 
 Open Claude Code in your project root and run:
 
@@ -43,7 +73,7 @@ Open Claude Code in your project root and run:
 /domain-init
 ```
 
-This scans `libs/` (or your configured root), reads each library's `project.json`/`package.json`, and writes a **Domain Registry** table to your `CLAUDE.md`:
+This scans `libs/` (or your configured root), reads each library's `project.json` / `package.json`, and writes a **Domain Registry** to your `CLAUDE.md`:
 
 ```markdown
 ## Domain Registry
@@ -52,62 +82,71 @@ This scans `libs/` (or your configured root), reads each library's `project.json
 | Path | Import Path | Description |
 |------|-------------|-------------|
 | libs/widget-chat | @myapp/widget-chat | Chat widget with AI integration |
-| libs/shared/sidebar | @myapp/shared/sidebar | Sidebar navigation |
+| libs/shared/sidebar | @myapp/shared/sidebar | Sidebar navigation and layout |
+| libs/auth | @myapp/auth | Authentication and session management |
 <!-- domain-registry-end -->
 ```
 
-### 3. Generate READMEs for libraries that don't have them
+### Step 2 — Document your libraries
+
+Generate `README.md` files for libraries that don't have them:
 
 ```
 /domain-readme libs/widget-chat
 /domain-readme libs/shared/sidebar
 ```
 
-### 4. Done
+Each README is generated from actual source code — exported services, NgRx store shape, component inputs/outputs, existing patterns.
 
-From now on, when Claude works on files inside a registered domain, it silently reads that domain's `README.md` first.
+### Step 3 — Done
+
+`domain-context` is now active. Claude will silently read the right README before working in any registered library.
 
 ---
 
 ## How It Works
 
 ```
-User: "Add a new action to the widget-chat store"
-                    │
-                    ▼
-    domain-context skill checks CLAUDE.md
-    for Domain Registry
-                    │
-                    ▼
-    Matches "widget-chat" → reads libs/widget-chat/README.md
-                    │
-                    ▼
-    Claude now knows:
-    - Store shape (state, computed, methods)
-    - Facade pattern used
-    - Import paths
-    - Existing conventions
-                    │
-                    ▼
-    Accurate implementation on first try
+User asks about libs/widget-chat/domain/chat.store.ts
+        │
+        ▼
+domain-context checks CLAUDE.md Domain Registry
+        │
+        ▼
+Matches → reads libs/widget-chat/README.md
+        │
+        ▼
+Claude now knows:
+  • NgRx Signal Store shape (state, computed signals, methods)
+  • Facade pattern and public service API
+  • Correct import paths (@myapp/widget-chat/domain)
+  • Existing error handling conventions
+        │
+        ▼
+Accurate implementation, right patterns, first try
 ```
+
+The skill triggers on:
+- File paths mentioned in the task (`libs/widget-chat/...`)
+- Import statements in existing code (`@myapp/widget-chat`)
+- Library names mentioned by the user ("work on widget-chat")
 
 ---
 
 ## Supported Project Structures
 
-| Structure | Detection | Notes |
-|-----------|-----------|-------|
-| Nx workspaces | `project.json` → `importPath` | Full support |
-| Angular libraries | `ng-package.json` + `package.json` | Full support |
-| npm workspaces | `package.json` → `name` | Supported |
-| Custom monorepos | Manual registry edit | Add rows to the table in CLAUDE.md |
+| Structure | Auto-detection | Notes |
+|-----------|---------------|-------|
+| **Nx workspaces** | `project.json` → `importPath` | Full support |
+| **Angular libraries** | `ng-package.json` + `package.json` | Full support |
+| **npm workspaces** | `package.json` → `name` | Supported |
+| **Custom monorepos** | Manual registry edit | Add rows directly to `CLAUDE.md` |
 
 ---
 
-## Manual Registry Setup
+## Manual Registry
 
-If auto-detection doesn't work for your structure, manually add entries to `CLAUDE.md`:
+Auto-detection not working for your structure? Add entries directly:
 
 ```markdown
 ## Domain Registry
@@ -115,8 +154,9 @@ If auto-detection doesn't work for your structure, manually add entries to `CLAU
 <!-- domain-registry-start -->
 | Path | Import Path | Description |
 |------|-------------|-------------|
-| packages/auth | @myapp/auth | Authentication and session management |
-| packages/api-client | @myapp/api | HTTP client with retry logic |
+| packages/auth | @myapp/auth | Authentication, JWT, session |
+| packages/api-client | @myapp/api | HTTP client with retry and caching |
+| services/payments | @myapp/payments | Stripe integration |
 <!-- domain-registry-end -->
 ```
 
@@ -124,42 +164,45 @@ If auto-detection doesn't work for your structure, manually add entries to `CLAU
 
 ## Domain README Format
 
-The `domain-readme` skill generates READMEs in a format optimized for Claude to parse:
+READMEs generated by `/domain-readme` follow a structure optimized for Claude to parse quickly:
 
 ```markdown
 # Library Name
-
 One-line description.
 
 ## Architecture
-Layer structure with file tree.
+Layer structure and data flow.
 
 ## Public API
-Services, stores, components with method signatures.
+Services, stores, components — with signatures.
 
 ## Key Patterns
-Domain-specific conventions.
+Conventions specific to this domain.
 
 ## Usage Example
-Minimal code snippet.
+Minimal import and usage snippet.
 
 ## Dependencies
-What this library depends on and what uses it.
+What this library depends on and what consumes it.
 ```
+
+You can edit these manually. Claude will use whatever is there.
 
 ---
 
 ## Requirements
 
-- Claude Code CLI
-- Node.js ≥ 18 (for the scan scripts)
-- `npx skills` CLI
+- [Claude Code](https://claude.ai/code) CLI
+- Node.js ≥ 18
+- `npx skills` CLI (`npm install -g skills` or use via `npx`)
 
 ---
 
 ## Contributing
 
 Issues and PRs welcome. The skill format follows the [skills.sh](https://skills.sh) specification.
+
+If you add support for a new monorepo structure (Turborepo, Lerna, Yarn workspaces), please open a PR with a test case.
 
 ---
 
