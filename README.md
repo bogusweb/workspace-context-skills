@@ -1,4 +1,4 @@
-# domain-context-skills
+# workspace-context-skills
 
 > Claude Code skill package — automatic domain context loading for monorepos and multi-library projects.
 
@@ -22,17 +22,17 @@ When Claude works on code inside a registered library, it silently reads that li
 
 ```bash
 # Global (recommended) — active in all projects
-npx skills add YOUR_USERNAME/domain-context-skills@domain-context -g -y
-npx skills add YOUR_USERNAME/domain-context-skills@domain-init -g -y
-npx skills add YOUR_USERNAME/domain-context-skills@domain-readme -g -y
+npx skills add YOUR_USERNAME/workspace-context-skills@domain-context -g -y
+npx skills add YOUR_USERNAME/workspace-context-skills@domain-init -g -y
+npx skills add YOUR_USERNAME/workspace-context-skills@domain-readme -g -y
 ```
 
 Or project-local:
 
 ```bash
-npx skills add YOUR_USERNAME/domain-context-skills@domain-context
-npx skills add YOUR_USERNAME/domain-context-skills@domain-init
-npx skills add YOUR_USERNAME/domain-context-skills@domain-readme
+npx skills add YOUR_USERNAME/workspace-context-skills@domain-context
+npx skills add YOUR_USERNAME/workspace-context-skills@domain-init
+npx skills add YOUR_USERNAME/workspace-context-skills@domain-readme
 ```
 
 ### 2. Initialize your project's Domain Registry

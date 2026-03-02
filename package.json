@@ -1,5 +1,5 @@
 {
-  "name": "domain-context-skills",
+  "name": "workspace-context-skills",
   "version": "1.0.0",
   "description": "Claude Code skills for automatic domain context loading in monorepos",
   "keywords": [
