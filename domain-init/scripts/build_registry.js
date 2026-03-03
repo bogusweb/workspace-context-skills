@@ -112,7 +112,7 @@ const tableRows = filtered.map(d =>
 
 const registryBlock = `## Domain Registry
 
-> Auto-maintained by domain-context skill. Run \`/domain-init\` to regenerate.
+> Auto-maintained by domain-init skill. Run \`/domain-init\` to regenerate.
 
 <!-- domain-registry-start -->
 | Path | Import Path | Description |
@@ -123,7 +123,7 @@ ${tableRows}
 const autoLoadInstruction = `
 ## Domain Context Loading
 
-The \`domain-context\` skill is active for this project. Before working on any library
+The \`domain-init\` skill is active for this project. Before working on any library
 listed in the Domain Registry above, silently read its \`README.md\` for architecture
 and pattern context.`;
 

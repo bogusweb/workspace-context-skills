@@ -21,8 +21,8 @@ Initialize or refresh the **Domain Registry** in this project's `CLAUDE.md`.
 Run the detection script to find all library directories:
 
 ```bash
-bash .claude/skills/domain-context/scripts/scan_domains.sh 2>/dev/null \
-  || node .claude/skills/domain-context/scripts/scan_domains.js 2>/dev/null
+bash .claude/skills/domain-init/scripts/scan_domains.sh 2>/dev/null \
+  || node .claude/skills/domain-init/scripts/scan_domains.js 2>/dev/null
 ```
 
 If neither script is available, scan manually:
@@ -62,7 +62,7 @@ Read the current `CLAUDE.md`. Then:
 
 ## Domain Registry
 
-> Auto-maintained by domain-context skill. Run `/domain-init` to regenerate.
+> Auto-maintained by domain-init skill. Run `/domain-init` to regenerate.
 
 <!-- domain-registry-start -->
 | Path | Import Path | Description |
@@ -73,13 +73,13 @@ Read the current `CLAUDE.md`. Then:
 
 ### Step 4 — Add Auto-Load Instruction (if missing)
 
-Check if `CLAUDE.md` already contains the phrase `domain-context skill` or `Domain Registry`. If it does NOT, also append:
+Check if `CLAUDE.md` already contains the phrase `domain-init skill` or `Domain Registry`. If it does NOT, also append:
 
 ```markdown
 
 ## Domain Context Loading
 
-The `domain-context` skill is active. Before working on any library listed in the
+The `domain-init` skill is active. Before working on any library listed in the
 Domain Registry above, silently read its `README.md` for architecture context.
 ```
 
